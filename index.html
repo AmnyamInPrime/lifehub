@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1e1e2e">
+<title>LifeHub — всё в одном</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+body{background:#1e1e2e;color:#cdd6f4;min-height:100vh;padding-bottom:80px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:0;height:0}
+.container{padding:20px;max-width:600px;margin:0 auto}
+.header{text-align:center;margin-bottom:20px;padding:15px 0}
+.header h1{font-size:24px;color:#89b4fa;margin-bottom:3px}
+.header p{color:#7f849c;font-size:12px}
+.card{background:#2a2a3e;border-radius:16px;padding:18px;margin-bottom:15px}
+.card-title{font-size:15px;color:#89b4fa;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.tab-content{display:none;animation:fadeIn .3s ease}
+.tab-content.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#2a2a3e;border-top:1px solid #313244;display:flex;justify-content:space-around;padding:8px 0;padding-bottom:max(8px,env(safe-area-inset-bottom));z-index:100}
+.nav-item{flex:1;text-align:center;padding:6px;cursor:pointer;color:#7f849c;font-size:10px;transition:color .2s;user-select:none}
+.nav-item.active{color:#89b4fa}
+.nav-item .icon{font-size:20px;display:block;margin-bottom:2px}
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:#a6e3a1;color:#1e1e2e}
+.btn-secondary{background:#313244;color:#cdd6f4}
+.btn-danger{background:#f38ba8;color:#1e1e2e}
+.input-group{margin-bottom:12px}
+.input-group label{display:block;font-size:12px;color:#7f849c;margin-bottom:6px}
+.input-group input,.input-group select,.input-group textarea{width:100%;padding:12px 14px;background:#1e1e2e;border:1px solid #313244;border-radius:10px;color:#cdd6f4;font-size:15px;outline:none;transition:border .2s;font-family:inherit}
+.input-group input:focus,.input-group select:focus,.input-group textarea:focus{border-color:#89b4fa}
+.row-2{display:flex;gap:10px}
+.row-2>*{flex:1}
+.balance-card{background:linear-gradient(135deg,#89b4fa 0%,#cba6f7 100%);border-radius:20px;padding:22px;margin-bottom:15px;box-shadow:0 8px 30px rgba(137,180,250,.25)}
+.balance-label{font-size:13px;opacity:.9;margin-bottom:5px;color:#1e1e2e}
+.balance-amount{font-size:34px;font-weight:bold;color:#1e1e2e;margin-bottom:8px}
+.balance-info{font-size:12px;color:#1e1e2e;opacity:.85}
+.expense-item{background:#1e1e2e;border-radius:12px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.expense-info{flex:1;min-width:0}
+.expense-name{font-size:14px;font-weight:600;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.expense-meta{font-size:11px;color:#7f849c}
+.expense-amount{font-size:16px;font-weight:bold;color:#f38ba8;margin-right:8px;white-space:nowrap}
+.btn-delete{background:transparent;border:none;color:#f38ba8;font-size:18px;cursor:pointer;padding:5px 8px;border-radius:8px}
+.empty{text-align:center;color:#7f849c;padding:30px 20px;font-size:13px}
+.placeholder{text-align:center;padding:60px 20px;color:#7f849c}
+.placeholder .big-icon{font-size:64px;margin-bottom:20px;opacity:.5}
+.placeholder .title{font-size:18px;color:#89b4fa;margin-bottom:8px}
+.placeholder .subtitle{font-size:13px}
+.cat-item{display:flex;justify-content:space-between;align-items:center;background:#1e1e2e;border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.cat-name{font-size:14px;font-weight:600}
+.cat-delete{background:transparent;border:none;color:#f38ba8;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px}
+.hist-cat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #313244}
+.hist-cat-row:last-child{border-bottom:none}
+.hist-cat-name{font-size:13px}
+.hist-cat-amount{font-size:13px;font-weight:bold;color:#f38ba8}
+.hist-cat-count{font-size:11px;color:#7f849c;margin-left:8px}
+.date-group{margin-bottom:15px}
+.date-group-title{font-size:13px;color:#89b4fa;margin-bottom:8px;padding-left:5px;display:flex;justify-content:space-between}
+.notes-search{display:flex;gap:8px;margin-bottom:15px}
+.notes-search input{flex:1;padding:12px 16px;background:#2a2a3e;border:1px solid #313244;border-radius:12px;color:#cdd6f4;font-size:14px;outline:none}
+.notes-search input:focus{border-color:#89b4fa}
+.btn-new-note{background:#89b4fa;color:#1e1e2e;border:none;border-radius:12px;padding:12px 18px;font-size:18px;font-weight:bold;cursor:pointer;transition:all .2s}
+.note-card{background:#2a2a3e;border-radius:14px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .2s;border-left:4px solid #89b4fa;position:relative}
+.note-card:active{transform:scale(.98)}
+.note-card.pinned{background:linear-gradient(90deg,#2a2a3e 0%,#313244 100%);box-shadow:0 4px 15px rgba(137,180,250,.15)}
+.note-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.note-title{font-size:15px;font-weight:600;flex:1;margin-right:8px;word-break:break-word}
+.note-pin{font-size:16px;cursor:pointer;opacity:.4;transition:opacity .2s;padding:2px 4px}
+.note-pin.active{opacity:1}
+.note-text{font-size:13px;color:#a6adc8;margin-bottom:10px;white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5}
+.note-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.note-tag{background:rgba(137,180,250,.15);color:#89b4fa;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:600}
+.note-meta{display:flex;justify-content:space-between;font-size:11px;color:#7f849c}
+.empty-notes{text-align:center;color:#7f849c;padding:60px 20px}
+.empty-notes .big-icon{font-size:64px;margin-bottom:20px;opacity:.4}
+.note-editor{position:fixed;top:0;left:0;right:0;bottom:0;background:#1e1e2e;z-index:500;display:none;flex-direction:column;padding:20px;padding-top:max(20px,env(safe-area-inset-top))}
+.note-editor.active{display:flex}
+.note-editor-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.note-editor-buttons{display:flex;gap:8px}
+.note-editor-btn{background:#313244;border:none;color:#cdd6f4;width:42px;height:42px;border-radius:12px;font-size:18px;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center}
+.note-editor-btn.save{background:#a6e3a1;color:#1e1e2e}
+.note-editor-btn.delete{background:#f38ba8;color:#1e1e2e}
+.note-editor-input{width:100%;background:transparent;border:none;color:#cdd6f4;font-size:22px;font-weight:bold;padding:10px 0;outline:none;font-family:inherit;margin-bottom:10px}
+.note-editor-input::placeholder{color:#45475a}
+.note-editor-text{flex:1;background:transparent;border:none;color:#cdd6f4;font-size:15px;padding:10px 0;outline:none;resize:none;font-family:inherit;line-height:1.6}
+.note-editor-text::placeholder{color:#45475a}
+.color-picker{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap}
+.color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;transition:all .2s;border:2px solid transparent}
+.color-dot.selected{border-color:#cdd6f4;transform:scale(1.15);box-shadow:0 0 10px rgba(255,255,255,.3)}
+.tags-picker{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:15px}
+.tag-chip{background:#313244;color:#a6adc8;padding:6px 12px;border-radius:10px;font-size:12px;cursor:pointer;transition:all .2s;user-select:none;border:none;font-family:inherit}
+.tag-chip.selected{background:#89b4fa;color:#1e1e2e;font-weight:600}
+.note-editor-meta{display:flex;justify-content:space-between;font-size:11px;color:#7f849c;padding:10px 0;border-top:1px solid #313244;margin-top:10px}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeInModal .2s ease}
+.modal-overlay.active{display:flex}
+@keyframes fadeInModal{from{opacity:0}to{opacity:1}}
+.modal-box{background:#2a2a3e;border-radius:20px;padding:25px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:slideUpModal .3s ease;border:1px solid #313244}
+@keyframes slideUpModal{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-icon{font-size:48px;text-align:center;margin-bottom:15px}
+.modal-title{font-size:18px;font-weight:bold;color:#cdd6f4;text-align:center;margin-bottom:10px}
+.modal-message{font-size:14px;color:#a6adc8;text-align:center;margin-bottom:20px;line-height:1.5}
+.modal-buttons{display:flex;gap:10px}
+.modal-btn{flex:1;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;transition:all .2s;font-family:inherit}
+.modal-btn:active{transform:scale(.98)}
+.modal-btn-cancel{background:#313244;color:#cdd6f4}
+.modal-btn-ok{background:#89b4fa;color:#1e1e2e}
+.modal-btn-danger{background:#f38ba8;color:#1e1e2e}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);background:#a6e3a1;color:#1e1e2e;padding:14px 24px;border-radius:30px;font-weight:bold;font-size:14px;z-index:1100;opacity:0;transition:all .3s ease;white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:90%}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:#f38ba8}
+.toast.warning{background:#f9e2af}
+.toast.info{background:#89b4fa}
+@media (max-width:375px){.container{padding:15px}.header h1{font-size:20px}.nav-item{font-size:9px}.nav-item .icon{font-size:18px}.card{padding:15px}.balance-amount{font-size:28px}}
+@media (min-width:768px){.container{padding:30px}.header h1{font-size:32px}}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ============================================================
+         ВКЛАДКА 1: РАСХОДЫ
+         ============================================================ -->
+    <div id="tab-expenses" class="tab-content active">
+        <div class="header">
+            <h1>💰 Расходы</h1>
+            <p>трекер трат</p>
+        </div>
+        
+        <div class="balance-card">
+            <div class="balance-label">Потрачено за месяц</div>
+            <div class="balance-amount" id="monthTotal">0 ₽</div>
+            <div class="balance-info" id="monthInfo">0 записей</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">➕ Добавить расход</div>
+            
+            <div class="input-group">
+                <label>На что потратил</label>
+                <input type="text" id="expenseName" placeholder="Обед в кафе">
+            </div>
+            
+            <div class="row-2">
+                <div class="input-group">
+                    <label>Сумма (₽)</label>
+                    <input type="number" id="expenseAmount" placeholder="500" min="0">
+                </div>
+                <div class="input-group">
+                    <label>Дата</label>
+                    <input type="date" id="expenseDate">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Категория</label>
+                <select id="expenseCategory"></select>
+            </div>
+            
+            <button class="btn btn-primary" id="btnAdd">Добавить</button>
+        </div>
+        
+        <div class="card-title" style="padding: 0 5px;">
+            <span>📋 Последние записи</span>
+            <span id="recentCount" style="color: #7f849c; font-size: 12px;"></span>
+        </div>
+        
+        <div id="recentList"></div>
+    </div>
+
+    <!-- ============================================================
+         ВКЛАДКА 2: ИСТОРИЯ
+         ============================================================ -->
+    <div id="tab-history" class="tab-content">
+        <div class="header">
+            <h1>📅 История</h1>
+            <p>все траты по месяцам</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">📆 Выбрать месяц</div>
+            <div class="input-group">
+                <select id="historyMonth" style="font-size: 16px;"></select>
+            </div>
+        </div>
+        
+        <div class="balance-card">
+            <div class="balance-label">Потрачено за месяц</div>
+            <div class="balance-amount" id="historyTotal">0 ₽</div>
+            <div class="balance-info" id="historyInfo">0 записей</div>
+        </div>
+        
+        <div class="card" id="historyCategoriesCard">
+            <div class="card-title">📊 По категориям</div>
+            <div id="historyCategories"></div>
+        </div>
+        
+        <div class="card-title" style="padding: 0 5px; margin-bottom: 10px;">
+            <span>📋 Все записи</span>
+            <span id="historyDaysCount" style="color: #7f849c; font-size: 12px;"></span>
+        </div>
+        <div id="historyList"></div>
+    </div>
+
+    <!-- ============================================================
+         ВКЛАДКА 3: ЗАМЕТКИ
+         ============================================================ -->
+    <div id="tab-notes" class="tab-content">
+        <div class="header">
+            <h1>📝 Заметки</h1>
+            <p>быстрые записи</p>
+        </div>
+        
+        <div class="notes-search">
+            <input type="text" id="notesSearch" placeholder="🔍 Поиск по заметкам...">
+            <button class="btn-new-note" id="btnNewNote">➕</button>
+        </div>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+            <button class="tag-chip selected" id="filterAll" onclick="filterNotes('all')">Все</button>
+            <button class="tag-chip" id="filterPinned" onclick="filterNotes('pinned')">📌 Закреплённые</button>
+        </div>
+        
+        <div id="notesList"></div>
+    </div>
+
+    <!-- ============================================================
+         ВКЛАДКА 4: ЗАДАЧИ
+         ============================================================ -->
+    <div id="tab-tasks" class="tab-content">
+        <div class="header">
+            <h1>✅ Задачи</h1>
+            <p>список дел</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">➕ Новая задача</div>
+            
+            <div class="input-group">
+                <input type="text" id="taskName" placeholder="Что нужно сделать?">
+            </div>
+            
+            <div class="row-2">
+                <div class="input-group">
+                    <select id="taskPriority">
+                        <option value="low">🟢 Низкий</option>
+                        <option value="medium" selected>🟡 Средний</option>
+                        <option value="high">🔴 Высокий</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <input type="date" id="taskDeadline">
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="btnAddTask">Добавить</button>
+        </div>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+            <button class="tag-chip selected" id="taskFilterAll" onclick="filterTasks('all')">Все</button>
+            <button class="tag-chip" id="taskFilterActive" onclick="filterTasks('active')">⏳ Активные</button>
+            <button class="tag-chip" id="taskFilterDone" onclick="filterTasks('done')">✅ Выполненные</button>
+        </div>
+        
+        <div id="tasksList"></div>
+    </div>
+
+    <!-- ============================================================
+         ВКЛАДКА 5: ЕЩЁ (настройки)
+         ============================================================ -->
+    <div id="tab-more" class="tab-content">
+        <div class="header">
+            <h1>⚙️ Ещё</h1>
+            <p>настройки и инструменты</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">
+                <span>🏷️ Мои категории</span>
+                <span id="catCount" style="color: #7f849c; font-size: 12px;"></span>
+            </div>
+            
+            <div id="categoriesList"></div>
+            
+            <div class="input-group" style="margin-top: 15px;">
+                <label>Новая категория</label>
+                <input type="text" id="newCategoryName" placeholder="Например: 🎁 Подарки">
+            </div>
+            
+            <button class="btn btn-primary" id="btnAddCategory">➕ Добавить категорию</button>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">📤 Экспорт данных</div>
+            <button class="btn btn-secondary" id="btnExportJSON" style="margin-bottom: 8px;">💾 Скачать JSON</button>
+            <button class="btn btn-secondary" id="btnExportCSV">📊 Скачать CSV</button>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">📥 Импорт данных</div>
+            <input type="file" id="importFile" accept=".json" style="color: #7f849c; font-size: 12px;">
+        </div>
+        
+        <div class="card">
+            <div class="card-title">🗑️ Опасная зона</div>
+            <button class="btn btn-danger" id="btnReset">Удалить ВСЕ данные</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- ============================================================
+     НИЖНЕЕ МЕНЮ
+     ============================================================ -->
+<div class="bottom-nav">
+    <div class="nav-item active" data-tab="expenses">
+        <span class="icon">💰</span>
+        Расходы
+    </div>
+    <div class="nav-item" data-tab="history">
+        <span class="icon">📅</span>
+        История
+    </div>
+    <div class="nav-item" data-tab="notes">
+        <span class="icon">📝</span>
+        Заметки
+    </div>
+    <div class="nav-item" data-tab="tasks">
+        <span class="icon">✅</span>
+        Задачи
+    </div>
+    <div class="nav-item" data-tab="more">
+        <span class="icon">⚙️</span>
+        Ещё
+    </div>
+</div>
+
+<!-- ============================================================
+     РЕДАКТОР ЗАМЕТКИ
+     ============================================================ -->
+<div class="note-editor" id="noteEditor">
+    <div class="note-editor-header">
+        <div class="note-editor-buttons">
+            <button class="note-editor-btn" id="editorClose" title="Закрыть">✖️</button>
+        </div>
+        <div class="note-editor-buttons">
+            <button class="note-editor-btn" id="editorPin" title="Закрепить">📌</button>
+            <button class="note-editor-btn delete" id="editorDelete" title="Удалить">🗑️</button>
+            <button class="note-editor-btn save" id="editorSave" title="Сохранить">💾</button>
+        </div>
+    </div>
+    
+    <input type="text" class="note-editor-input" id="editorTitle" placeholder="Заголовок...">
+    
+    <div class="color-picker" id="colorPicker"></div>
+    
+    <div class="tags-picker" id="tagsPicker"></div>
+    
+    <textarea class="note-editor-text" id="editorText" placeholder="Начни писать..."></textarea>
+    
+    <div class="note-editor-meta">
+        <span id="editorCreated"></span>
+        <span id="editorUpdated"></span>
+    </div>
+</div>
+
+<!-- ============================================================
+     МОДАЛЬНЫЕ ОКНА
+     ============================================================ -->
+<div class="modal-overlay" id="modalAlert">
+    <div class="modal-box">
+        <div class="modal-icon" id="alertIcon">⚠️</div>
+        <div class="modal-title" id="alertTitle">Внимание</div>
+        <div class="modal-message" id="alertMessage"></div>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-ok" id="alertOk">OK</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalConfirm">
+    <div class="modal-box">
+        <div class="modal-icon" id="confirmIcon">❓</div>
+        <div class="modal-title" id="confirmTitle">Подтверждение</div>
+        <div class="modal-message" id="confirmMessage"></div>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" id="confirmCancel">Отмена</button>
+            <button class="modal-btn modal-btn-danger" id="confirmOk">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- Тост -->
+<div class="toast" id="toast"></div>
+<script>
+// ============================================================
+//                    КАТЕГОРИИ
+// ============================================================
+
+const DEFAULT_CATEGORIES = [
+    { name: '🍔 Еда', color: '#f38ba8' },
+    { name: '🚗 Транспорт', color: '#89b4fa' },
+    { name: '🏠 Жильё', color: '#cba6f7' },
+    { name: '🎮 Развлечения', color: '#f9e2af' },
+    { name: '💊 Здоровье', color: '#a6e3a1' },
+    { name: '👕 Одежда', color: '#94e2d5' },
+    { name: '📚 Образование', color: '#f5c2e7' },
+    { name: '📦 Другое', color: '#7f849c' },
+];
+
+let categories = JSON.parse(localStorage.getItem('categories') || 'null') || DEFAULT_CATEGORIES;
+
+function saveCategories() {
+    localStorage.setItem('categories', JSON.stringify(categories));
+}
+
+function getCategoryColor(name) {
+    const cat = categories.find(c => c.name === name);
+    return cat ? cat.color : '#7f849c';
+}
+
+// ============================================================
+//                    УТИЛИТЫ
+// ============================================================
+
+function formatMoney(n) {
+    return Math.round(n).toLocaleString('ru-RU') + ' ₽';
+}
+
+function formatDateTime(iso) {
+    return new Date(iso).toLocaleString('ru-RU', {
+        day: 'numeric', month: 'short',
+        hour: '2-digit', minute: '2-digit'
+    });
+}
+
+function formatDateKey(iso) {
+    return new Date(iso).toISOString().split('T')[0];
+}
+
+function formatMonthKey(iso) {
+    return new Date(iso).toISOString().slice(0, 7);
+}
+
+function getMonthName(key) {
+    const [year, month] = key.split('-');
+    const months = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+                    'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    return months[parseInt(month) - 1] + ' ' + year;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function getWordForm(n, f1, f2, f5) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return f1;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return f2;
+    return f5;
+}
+
+// ============================================================
+//                    ТОСТ
+// ============================================================
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast ' + type;
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ============================================================
+//                    МОДАЛЬНЫЕ ОКНА
+// ============================================================
+
+function showAlert(message, title = 'Внимание', icon = '⚠️') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('modalAlert');
+        document.getElementById('alertIcon').textContent = icon;
+        document.getElementById('alertTitle').textContent = title;
+        document.getElementById('alertMessage').textContent = message;
+        modal.classList.add('active');
+        
+        const close = () => {
+            modal.classList.remove('active');
+            document.getElementById('alertOk').removeEventListener('click', close);
+            resolve(true);
+        };
+        document.getElementById('alertOk').addEventListener('click', close);
+    });
+}
+
+function showConfirm(message, title = 'Подтверждение', icon = '❓') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('modalConfirm');
+        document.getElementById('confirmIcon').textContent = icon;
+        document.getElementById('confirmTitle').textContent = title;
+        document.getElementById('confirmMessage').textContent = message;
+        modal.classList.add('active');
+        
+        const okBtn = document.getElementById('confirmOk');
+        const cancelBtn = document.getElementById('confirmCancel');
+        
+        const onOk = () => {
+            modal.classList.remove('active');
+            cleanup();
+            resolve(true);
+        };
+        const onCancel = () => {
+            modal.classList.remove('active');
+            cleanup();
+            resolve(false);
+        };
+        const cleanup = () => {
+            okBtn.removeEventListener('click', onOk);
+            cancelBtn.removeEventListener('click', onCancel);
+        };
+        
+        okBtn.addEventListener('click', onOk);
+        cancelBtn.addEventListener('click', onCancel);
+    });
+}
+
+// ============================================================
+//                    РАСХОДЫ
+// ============================================================
+
+let expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+
+function saveExpenses() {
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+}
+
+function renderExpenseForm() {
+    const sel = document.getElementById('expenseCategory');
+    if (!sel) return;
+    sel.innerHTML = categories.map(c => 
+        '<option value="' + c.name + '">' + c.name + '</option>'
+    ).join('');
+}
+
+function addExpense() {
+    const name = document.getElementById('expenseName').value.trim();
+    const amount = parseFloat(document.getElementById('expenseAmount').value);
+    const dateInput = document.getElementById('expenseDate').value;
+    const category = document.getElementById('expenseCategory').value;
+    
+    if (!name) { showAlert('Введи название расхода', 'Ошибка', '❌'); return; }
+    if (!amount || amount <= 0) { showAlert('Введи сумму больше 0', 'Ошибка', '❌'); return; }
+    if (!dateInput) { showAlert('Выбери дату', 'Ошибка', '❌'); return; }
+    
+    const now = new Date();
+    const parts = dateInput.split('-');
+    const date = new Date(parts[0], parts[1] - 1, parts[2], now.getHours(), now.getMinutes(), now.getSeconds());
+    
+    expenses.unshift({
+        id: Date.now() + Math.random(),
+        name: name,
+        amount: amount,
+        category: category,
+        date: date.toISOString()
+    });
+    
+    saveExpenses();
+    document.getElementById('expenseName').value = '';
+    document.getElementById('expenseAmount').value = '';
+    renderExpenses();
+    showToast('✅ Расход добавлен');
+}
+
+async function deleteExpense(id) {
+    const ok = await showConfirm('Удалить эту запись?', 'Удаление', '🗑️');
+    if (!ok) return;
+    expenses = expenses.filter(e => e.id !== id);
+    saveExpenses();
+    renderExpenses();
+    if (document.getElementById('tab-history').classList.contains('active')) {
+        renderHistory();
+    }
+    showToast('🗑️ Запись удалена', 'info');
+}
+
+function renderExpenses() {
+    const now = new Date();
+    const monthKey = formatMonthKey(now.toISOString());
+    const monthExpenses = expenses.filter(e => formatMonthKey(e.date) === monthKey);
+    const monthTotal = monthExpenses.reduce((s, e) => s + e.amount, 0);
+    
+    document.getElementById('monthTotal').textContent = formatMoney(monthTotal);
+    document.getElementById('monthInfo').textContent = 
+        monthExpenses.length + ' ' + getWordForm(monthExpenses.length, 'запись', 'записи', 'записей');
+    
+    const recent = expenses.slice(0, 10);
+    document.getElementById('recentCount').textContent = 'всего: ' + expenses.length;
+    
+    const list = document.getElementById('recentList');
+    if (recent.length === 0) {
+        list.innerHTML = '<div class="empty">Пока пусто. Добавь первый расход!</div>';
+        return;
+    }
+    
+    list.innerHTML = recent.map(e => 
+        '<div class="expense-item">' +
+            '<div class="expense-info">' +
+                '<div class="expense-name">' + escapeHtml(e.name) + '</div>' +
+                '<div class="expense-meta">' + e.category + ' • ' + formatDateTime(e.date) + '</div>' +
+            '</div>' +
+            '<div class="expense-amount">−' + formatMoney(e.amount) + '</div>' +
+            '<button class="btn-delete" onclick="deleteExpense(' + e.id + ')">🗑️</button>' +
+        '</div>'
+    ).join('');
+}
+
+// ============================================================
+//                    ИСТОРИЯ
+// ============================================================
+
+function renderHistory() {
+    const monthSelect = document.getElementById('historyMonth');
+    if (!monthSelect) return;
+    
+    const months = [...new Set(expenses.map(e => formatMonthKey(e.date)))].sort().reverse();
+    const currentMonth = formatMonthKey(new Date().toISOString());
+    if (!months.includes(currentMonth)) {
+        months.unshift(currentMonth);
+    }
+    
+    const selectedMonth = monthSelect.value || months[0];
+    monthSelect.innerHTML = months.map(m => 
+        '<option value="' + m + '"' + (m === selectedMonth ? ' selected' : '') + '>' + getMonthName(m) + '</option>'
+    ).join('');
+    
+    const monthExpenses = expenses.filter(e => formatMonthKey(e.date) === selectedMonth);
+    const total = monthExpenses.reduce((s, e) => s + e.amount, 0);
+    
+    document.getElementById('historyTotal').textContent = formatMoney(total);
+    document.getElementById('historyInfo').textContent = 
+        monthExpenses.length + ' ' + getWordForm(monthExpenses.length, 'запись', 'записи', 'записей');
+    
+    const byCategory = {};
+    monthExpenses.forEach(e => {
+        if (!byCategory[e.category]) byCategory[e.category] = { sum: 0, count: 0 };
+        byCategory[e.category].sum += e.amount;
+        byCategory[e.category].count++;
+    });
+    
+    const sortedCats = Object.entries(byCategory).sort((a, b) => b[1].sum - a[1].sum);
+    
+    if (sortedCats.length === 0) {
+        document.getElementById('historyCategoriesCard').style.display = 'none';
+    } else {
+        document.getElementById('historyCategoriesCard').style.display = 'block';
+        document.getElementById('historyCategories').innerHTML = sortedCats.map(function(item) {
+            const name = item[0], data = item[1];
+            return '<div class="hist-cat-row">' +
+                '<div>' +
+                    '<div class="hist-cat-name" style="color: ' + getCategoryColor(name) + ';">' + name + '</div>' +
+                    '<div class="hist-cat-count">' + data.count + ' ' + getWordForm(data.count, 'запись', 'записи', 'записей') + '</div>' +
+                '</div>' +
+                '<div class="hist-cat-amount">' + formatMoney(data.sum) + '</div>' +
+            '</div>';
+        }).join('');
+    }
+    
+    const byDay = {};
+    monthExpenses.forEach(e => {
+        const key = formatDateKey(e.date);
+        if (!byDay[key]) byDay[key] = [];
+        byDay[key].push(e);
+    });
+    
+    const sortedDays = Object.keys(byDay).sort().reverse();
+    document.getElementById('historyDaysCount').textContent = sortedDays.length + ' дней';
+    
+    const list = document.getElementById('historyList');
+    
+    if (sortedDays.length === 0) {
+        list.innerHTML = '<div class="empty">За этот месяц нет расходов</div>';
+        return;
+    }
+    
+    list.innerHTML = sortedDays.map(day => {
+        const items = byDay[day];
+        const dayTotal = items.reduce((s, e) => s + e.amount, 0);
+        const date = new Date(day);
+        const today = formatDateKey(new Date().toISOString());
+        const yesterday = formatDateKey(new Date(Date.now() - 86400000).toISOString());
+        
+        let dayName;
+        if (day === today) dayName = 'Сегодня';
+        else if (day === yesterday) dayName = 'Вчера';
+        else dayName = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' });
+        
+        return '<div class="date-group">' +
+            '<div class="date-group-title">' +
+                '<span>' + dayName + '</span>' +
+                '<span style="color: #f38ba8;">' + formatMoney(dayTotal) + '</span>' +
+            '</div>' +
+            items.map(e => 
+                '<div class="expense-item">' +
+                    '<div class="expense-info">' +
+                        '<div class="expense-name">' + escapeHtml(e.name) + '</div>' +
+                        '<div class="expense-meta">' + e.category + '</div>' +
+                    '</div>' +
+                    '<div class="expense-amount">' + formatMoney(e.amount) + '</div>' +
+                    '<button class="btn-delete" onclick="deleteExpense(' + e.id + ')">🗑️</button>' +
+                '</div>'
+            ).join('') +
+        '</div>';
+    }).join('');
+}
+
+// ============================================================
+//                    КАТЕГОРИИ (управление)
+// ============================================================
+
+function renderCategoriesList() {
+    const list = document.getElementById('categoriesList');
+    if (!list) return;
+    document.getElementById('catCount').textContent = categories.length + ' шт.';
+    
+    list.innerHTML = categories.map(c => {
+        const usedCount = expenses.filter(e => e.category === c.name).length;
+        return '<div class="cat-item">' +
+            '<div>' +
+                '<div class="cat-name" style="color: ' + c.color + ';">' + c.name + '</div>' +
+                '<div style="font-size: 11px; color: #7f849c; margin-top: 2px;">' +
+                    usedCount + ' ' + getWordForm(usedCount, 'запись', 'записи', 'записей') +
+                '</div>' +
+            '</div>' +
+            '<button class="cat-delete" onclick="deleteCategory(\'' + c.name.replace(/'/g, "\\'") + '\')">🗑️</button>' +
+        '</div>';
+    }).join('');
+}
+
+async function addCategory() {
+    const input = document.getElementById('newCategoryName');
+    const name = input.value.trim();
+    
+    if (!name) { await showAlert('Введи название категории', 'Ошибка', '❌'); return; }
+    if (categories.some(c => c.name === name)) { await showAlert('Такая категория уже есть', 'Ошибка', '❌'); return; }
+    
+    const colors = ['#f38ba8', '#89b4fa', '#cba6f7', '#f9e2af', '#a6e3a1', '#94e2d5', '#f5c2e7', '#fab387', '#eba0ac'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    
+    categories.push({ name: name, color: color });
+    saveCategories();
+    input.value = '';
+    renderCategoriesList();
+    renderExpenseForm();
+    showToast('✅ Категория добавлена');
+}
+
+async function deleteCategory(name) {
+    const usedCount = expenses.filter(e => e.category === name).length;
+    if (usedCount > 0) {
+        await showAlert('В этой категории ' + usedCount + ' ' + getWordForm(usedCount, 'запись', 'записи', 'записей') + '. Сначала удали их.', 'Нельзя удалить', '❌');
+        return;
+    }
+    
+    const ok = await showConfirm('Удалить категорию "' + name + '"?', 'Удаление категории', '🗑️');
+    if (!ok) return;
+    
+    categories = categories.filter(c => c.name !== name);
+    saveCategories();
+    renderCategoriesList();
+    renderExpenseForm();
+    showToast('🗑️ Категория удалена', 'info');
+}
+
+// ============================================================
+//                    ЗАМЕТКИ
+// ============================================================
+
+const NOTE_COLORS = ['#89b4fa', '#f38ba8', '#a6e3a1', '#f9e2af', '#cba6f7', '#94e2d5', '#fab387', '#f5c2e7'];
+const NOTE_TAGS = ['#важное', '#идея', '#работа', '#личное', '#учёба', '#покупки', '#цитата', '#цель'];
+
+let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+let notesFilter = 'all';
+let currentNoteId = null;
+let currentNoteColor = NOTE_COLORS[0];
+let currentNoteTags = [];
+
+function saveNotes() {
+    localStorage.setItem('notes', JSON.stringify(notes));
+}
+
+function openNoteEditor(noteId) {
+    currentNoteId = noteId || null;
+    const editor = document.getElementById('noteEditor');
+    
+    if (noteId) {
+        const note = notes.find(n => n.id === noteId);
+        document.getElementById('editorTitle').value = note.title || '';
+        document.getElementById('editorText').value = note.text || '';
+        currentNoteColor = note.color || NOTE_COLORS[0];
+        currentNoteTags = [...(note.tags || [])];
+        
+        const created = new Date(note.created);
+        const updated = new Date(note.updated);
+        document.getElementById('editorCreated').textContent = 'Создано: ' + created.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        document.getElementById('editorUpdated').textContent = 'Изменено: ' + updated.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+    } else {
+        document.getElementById('editorTitle').value = '';
+        document.getElementById('editorText').value = '';
+        currentNoteColor = NOTE_COLORS[0];
+        currentNoteTags = [];
+        document.getElementById('editorCreated').textContent = '';
+        document.getElementById('editorUpdated').textContent = '';
+    }
+    
+    renderColorPicker();
+    renderTagsPicker();
+    
+    const pinBtn = document.getElementById('editorPin');
+    if (noteId) {
+        const note = notes.find(n => n.id === noteId);
+        pinBtn.style.background = note.pinned ? '#f9e2af' : '#313244';
+        pinBtn.style.color = note.pinned ? '#1e1e2e' : '#cdd6f4';
+    } else {
+        pinBtn.style.background = '#313244';
+        pinBtn.style.color = '#cdd6f4';
+    }
+    
+    editor.classList.add('active');
+    setTimeout(() => document.getElementById('editorTitle').focus(), 150);
+}
+
+function closeNoteEditor() {
+    document.getElementById('noteEditor').classList.remove('active');
+    currentNoteId = null;
+}
+
+function renderColorPicker() {
+    document.getElementById('colorPicker').innerHTML = NOTE_COLORS.map(color => 
+        '<div class="color-dot' + (color === currentNoteColor ? ' selected' : '') + '" style="background: ' + color + ';" onclick="selectColor(\'' + color + '\')"></div>'
+    ).join('');
+}
+
+function selectColor(color) {
+    currentNoteColor = color;
+    renderColorPicker();
+}
+
+function renderTagsPicker() {
+    document.getElementById('tagsPicker').innerHTML = NOTE_TAGS.map(tag => 
+        '<div class="tag-chip' + (currentNoteTags.includes(tag) ? ' selected' : '') + '" onclick="toggleNoteTag(\'' + tag + '\')">' + tag + '</div>'
+    ).join('');
+}
+
+function toggleNoteTag(tag) {
+    if (currentNoteTags.includes(tag)) {
+        currentNoteTags = currentNoteTags.filter(t => t !== tag);
+    } else {
+        currentNoteTags.push(tag);
+    }
+    renderTagsPicker();
+}
+
+function saveCurrentNote() {
+    const title = document.getElementById('editorTitle').value.trim();
+    const text = document.getElementById('editorText').value.trim();
+    
+    if (!title && !text) { showToast('❌ Заметка пустая', 'warning'); return; }
+    
+    if (currentNoteId) {
+        const note = notes.find(n => n.id === currentNoteId);
+        note.title = title || 'Без названия';
+        note.text = text;
+        note.color = currentNoteColor;
+        note.tags = [...currentNoteTags];
+        note.updated = new Date().toISOString();
+        showToast('✅ Заметка обновлена');
+    } else {
+        notes.unshift({
+            id: Date.now() + Math.random(),
+            title: title || 'Без названия',
+            text: text,
+            color: currentNoteColor,
+            tags: [...currentNoteTags],
+            pinned: false,
+            created: new Date().toISOString(),
+            updated: new Date().toISOString()
+        });
+        showToast('✅ Заметка создана');
+    }
+    
+    saveNotes();
+    closeNoteEditor();
+    renderNotes();
+}
+
+async function deleteCurrentNote() {
+    if (!currentNoteId) { closeNoteEditor(); return; }
+    const ok = await showConfirm('Удалить заметку?', 'Удаление', '🗑️');
+    if (!ok) return;
+    
+    notes = notes.filter(n => n.id !== currentNoteId);
+    saveNotes();
+    closeNoteEditor();
+    renderNotes();
+    showToast('🗑️ Заметка удалена', 'info');
+}
+
+function togglePin(noteId, event) {
+    if (event) event.stopPropagation();
+    const note = notes.find(n => n.id === noteId);
+    if (note) {
+        note.pinned = !note.pinned;
+        note.updated = new Date().toISOString();
+        saveNotes();
+        renderNotes();
+        showToast(note.pinned ? '📌 Закреплено' : '📍 Откреплено', 'info');
+    }
+}
+
+function toggleCurrentNotePin() {
+    if (!currentNoteId) { showToast('❌ Сначала сохрани заметку', 'warning'); return; }
+    togglePin(currentNoteId);
+    const note = notes.find(n => n.id === currentNoteId);
+    const pinBtn = document.getElementById('editorPin');
+    pinBtn.style.background = note.pinned ? '#f9e2af' : '#313244';
+    pinBtn.style.color = note.pinned ? '#1e1e2e' : '#cdd6f4';
+}
+
+function filterNotes(filter) {
+    notesFilter = filter;
+    document.getElementById('filterAll').classList.toggle('selected', filter === 'all');
+    document.getElementById('filterPinned').classList.toggle('selected', filter === 'pinned');
+    renderNotes();
+}
+
+function renderNotes() {
+    const search = document.getElementById('notesSearch').value.toLowerCase();
+    let filtered = [...notes];
+    
+    if (notesFilter === 'pinned') filtered = filtered.filter(n => n.pinned);
+    
+    if (search) {
+        filtered = filtered.filter(n => 
+            (n.title || '').toLowerCase().includes(search) ||
+            (n.text || '').toLowerCase().includes(search) ||
+            (n.tags || []).some(t => t.toLowerCase().includes(search))
+        );
+    }
+    
+    filtered.sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return new Date(b.updated) - new Date(a.updated);
+    });
+    
+    const list = document.getElementById('notesList');
+    
+    if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-notes">' +
+            '<div class="big-icon">📝</div>' +
+            '<div>' + (search ? 'Ничего не найдено' : (notesFilter === 'pinned' ? 'Нет закреплённых заметок' : 'Пока нет заметок')) + '</div>' +
+            (search || notesFilter !== 'all' ? '' : '<div style="margin-top: 10px; font-size: 12px;">Нажми ➕ чтобы создать</div>') +
+        '</div>';
+        return;
+    }
+    
+    list.innerHTML = filtered.map(n => {
+        const preview = (n.text || '').substring(0, 200);
+        const date = new Date(n.updated);
+        const dateStr = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        
+        return '<div class="note-card' + (n.pinned ? ' pinned' : '') + '" style="border-left-color: ' + n.color + ';" onclick="openNoteEditor(' + n.id + ')">' +
+            '<div class="note-card-header">' +
+                '<div class="note-title">' + escapeHtml(n.title) + '</div>' +
+                '<div class="note-pin' + (n.pinned ? ' active' : '') + '" onclick="togglePin(' + n.id + ', event)">' +
+                    (n.pinned ? '📌' : '📍') +
+                '</div>' +
+            '</div>' +
+            (n.tags && n.tags.length > 0 ? '<div class="note-tags">' + n.tags.map(t => '<span class="note-tag">' + t + '</span>').join('') + '</div>' : '') +
+            (preview ? '<div class="note-text">' + escapeHtml(preview) + '</div>' : '') +
+            '<div class="note-meta">' +
+                '<span>' + (n.tags ? n.tags.length : 0) + ' ' + getWordForm(n.tags ? n.tags.length : 0, 'тег', 'тега', 'тегов') + '</span>' +
+                '<span>' + dateStr + '</span>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+
+// ============================================================
+//                    ЗАДАЧИ
+// ============================================================
+
+let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+let tasksFilter = 'all';
+
+function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function addTask() {
+    const name = document.getElementById('taskName').value.trim();
+    const priority = document.getElementById('taskPriority').value;
+    const deadline = document.getElementById('taskDeadline').value;
+    
+    if (!name) { showAlert('Введи название задачи', 'Ошибка', '❌'); return; }
+    
+    tasks.unshift({
+        id: Date.now() + Math.random(),
+        name: name,
+        priority: priority,
+        deadline: deadline || null,
+        done: false,
+        created: new Date().toISOString()
+    });
+    
+    saveTasks();
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskDeadline').value = '';
+    renderTasks();
+    showToast('✅ Задача добавлена');
+}
+
+async function deleteTask(id) {
+    const ok = await showConfirm('Удалить задачу?', 'Удаление', '🗑️');
+    if (!ok) return;
+    tasks = tasks.filter(t => t.id !== id);
+    saveTasks();
+    renderTasks();
+    showToast('🗑️ Задача удалена', 'info');
+}
+
+function toggleTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (task) {
+        task.done = !task.done;
+        task.completed = task.done ? new Date().toISOString() : null;
+        saveTasks();
+        renderTasks();
+        if (task.done) showToast('✅ Задача выполнена');
+    }
+}
+
+function filterTasks(filter) {
+    tasksFilter = filter;
+    document.getElementById('taskFilterAll').classList.toggle('selected', filter === 'all');
+    document.getElementById('taskFilterActive').classList.toggle('selected', filter === 'active');
+    document.getElementById('taskFilterDone').classList.toggle('selected', filter === 'done');
+    renderTasks();
+}
+
+function renderTasks() {
+    let filtered = [...tasks];
+    
+    if (tasksFilter === 'active') filtered = filtered.filter(t => !t.done);
+    if (tasksFilter === 'done') filtered = filtered.filter(t => t.done);
+    
+    // Сортировка: активные вверху, потом по приоритету, потом по дедлайну
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    filtered.sort((a, b) => {
+        if (a.done !== b.done) return a.done ? 1 : -1;
+        if (a.priority !== b.priority) return priorityOrder[a.priority] - priorityOrder[b.priority];
+        if (a.deadline && b.deadline) return new Date(a.deadline) - new Date(b.deadline);
+        if (a.deadline) return -1;
+        if (b.deadline) return 1;
+        return 0;
+    });
+    
+    const list = document.getElementById('tasksList');
+    
+    if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-notes"><div class="big-icon">✅</div><div>' + 
+            (tasksFilter === 'all' ? 'Пока нет задач' : (tasksFilter === 'active' ? 'Нет активных задач' : 'Нет выполненных задач')) + 
+        '</div></div>';
+        return;
+    }
+    
+    const priorityEmoji = { high: '🔴', medium: '🟡', low: '🟢' };
+    
+    list.innerHTML = filtered.map(t => {
+        let deadlineStr = '';
+        if (t.deadline) {
+            const d = new Date(t.deadline);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const deadlineDate = new Date(t.deadline);
+            deadlineDate.setHours(0, 0, 0, 0);
+            
+            const diffDays = Math.round((deadlineDate - today) / 86400000);
+            
+            if (diffDays < 0) deadlineStr = ' <span style="color: #f38ba8;">⚠️ просрочено</span>';
+            else if (diffDays === 0) deadlineStr = ' <span style="color: #f9e2af;">📅 сегодня</span>';
+            else if (diffDays === 1) deadlineStr = ' <span style="color: #89b4fa;">📅 завтра</span>';
+            else deadlineStr = ' <span style="color: #7f849c;">📅 ' + d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) + '</span>';
+        }
+        
+        return '<div class="expense-item" style="' + (t.done ? 'opacity: 0.5;' : '') + '">' +
+            '<div style="font-size: 22px; cursor: pointer; margin-right: 12px;" onclick="toggleTask(' + t.id + ')">' +
+                (t.done ? '✅' : '⬜') +
+            '</div>' +
+            '<div class="expense-info" onclick="toggleTask(' + t.id + ')" style="cursor: pointer;">' +
+                '<div class="expense-name" style="' + (t.done ? 'text-decoration: line-through;' : '') + '">' +
+                    priorityEmoji[t.priority] + ' ' + escapeHtml(t.name) +
+                '</div>' +
+                '<div class="expense-meta">' + deadlineStr + '</div>' +
+            '</div>' +
+            '<button class="btn-delete" onclick="deleteTask(' + t.id + ')">🗑️</button>' +
+        '</div>';
+    }).join('');
+}
+
+// ============================================================
+//                    ЭКСПОРТ / ИМПОРТ
+// ============================================================
+
+function exportJSON() {
+    const data = {
+        expenses: expenses,
+        categories: categories,
+        notes: notes,
+        tasks: tasks,
+        exportedAt: new Date().toISOString(),
+        version: '2.0'
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lifehub-backup-' + formatDateKey(new Date().toISOString()) + '.json';
+    a.click();
+    showToast('💾 Файл скачан');
+}
+
+function exportCSV() {
+    const lines = ['Дата,Название,Категория,Сумма'];
+    expenses.forEach(e => {
+        lines.push(formatDateTime(e.date) + ',"' + e.name + '","' + e.category + '",' + e.amount);
+    });
+    const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lifehub-' + formatDateKey(new Date().toISOString()) + '.csv';
+    a.click();
+    showToast('📊 Файл скачан');
+}
+
+function importData(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+        try {
+            const data = JSON.parse(event.target.result);
+            const ok = await showConfirm(
+                'Импортировать данные?\n\nТекущие данные будут заменены.',
+                'Импорт',
+                '📥'
+            );
+            if (!ok) return;
+            
+            if (data.expenses) { expenses = data.expenses; saveExpenses(); }
+            if (data.categories) { categories = data.categories; saveCategories(); }
+            if (data.notes) { notes = data.notes; saveNotes(); }
+            if (data.tasks) { tasks = data.tasks; saveTasks(); }
+            
+            renderExpenses();
+            renderCategoriesList();
+            renderExpenseForm();
+            renderNotes();
+            renderTasks();
+            showToast('✅ Импортировано');
+        } catch (err) {
+            showAlert('Ошибка чтения файла', 'Ошибка', '❌');
+        }
+    };
+    reader.readAsText(file);
+}
+
+async function resetAll() {
+    const ok1 = await showConfirm(
+        'Удалить ВСЕ данные?\n\nЭто необратимо!',
+        '⚠️ Опасное действие',
+        '⚠️'
+    );
+    if (!ok1) return;
+    
+    const ok2 = await showConfirm(
+        'Точно уверен? Всё будет удалено.',
+        'Последнее предупреждение',
+        '🚨'
+    );
+    if (!ok2) return;
+    
+    localStorage.removeItem('expenses');
+    localStorage.removeItem('categories');
+    localStorage.removeItem('notes');
+    localStorage.removeItem('tasks');
+    
+    expenses = [];
+    categories = [...DEFAULT_CATEGORIES];
+    notes = [];
+    tasks = [];
+    
+    saveCategories();
+    renderExpenses();
+    renderCategoriesList();
+    renderExpenseForm();
+    renderNotes();
+    renderTasks();
+    showToast('🗑️ Всё удалено', 'info');
+}
+
+// ============================================================
+//                    ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+// ============================================================
+
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const tab = item.dataset.tab;
+        
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        if (tab === 'history') renderHistory();
+        if (tab === 'more') renderCategoriesList();
+        if (tab === 'notes') renderNotes();
+        if (tab === 'tasks') renderTasks();
+    });
+});
+
+// ============================================================
+//                    ИНИЦИАЛИЗАЦИЯ
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Форма расходов
+    renderExpenseForm();
+    document.getElementById('expenseDate').value = formatDateKey(new Date().toISOString());
+    
+    document.getElementById('btnAdd').addEventListener('click', addExpense);
+    document.getElementById('expenseName').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') document.getElementById('expenseAmount').focus();
+    });
+    document.getElementById('expenseAmount').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addExpense();
+    });
+    
+    // История
+    document.getElementById('historyMonth').addEventListener('change', renderHistory);
+    
+    // Категории
+    document.getElementById('btnAddCategory').addEventListener('click', addCategory);
+    document.getElementById('newCategoryName').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addCategory();
+    });
+    
+    // Заметки
+    document.getElementById('notesSearch').addEventListener('input', renderNotes);
+    document.getElementById('btnNewNote').addEventListener('click', function() { openNoteEditor(); });
+    document.getElementById('editorClose').addEventListener('click', closeNoteEditor);
+    document.getElementById('editorSave').addEventListener('click', saveCurrentNote);
+    document.getElementById('editorDelete').addEventListener('click', deleteCurrentNote);
+    document.getElementById('editorPin').addEventListener('click', toggleCurrentNotePin);
+    
+    // Задачи
+    document.getElementById('btnAddTask').addEventListener('click', addTask);
+    document.getElementById('taskName').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addTask();
+    });
+    
+    // Экспорт / импорт / сброс
+    document.getElementById('btnExportJSON').addEventListener('click', exportJSON);
+    document.getElementById('btnExportCSV').addEventListener('click', exportCSV);
+    document.getElementById('importFile').addEventListener('change', importData);
+    document.getElementById('btnReset').addEventListener('click', resetAll);
+    
+    // Первая отрисовка
+    renderExpenses();
+    renderCategoriesList();
+    renderNotes();
+    renderTasks();
+    
+    console.log('🚀 LifeHub v2 полностью загружен!');
+    console.log('💰 Расходы, 📅 История, 📝 Заметки, ✅ Задачи');
+});
+
+// Регистрация Service Worker (PWA)
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(function() {});
+}
+</script>
+</body>
+</html>
